@@ -2,3 +2,5 @@
 .test
 .venv/
 .env/
+.idea/
+.idea
