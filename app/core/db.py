@@ -3,7 +3,6 @@ import ormar
 
 import sqlalchemy
 from datetime import datetime
-# from pydantic import datetime
 from .config import settings
 
 database = databases.Database(settings.DB_URL)
@@ -34,6 +33,20 @@ class Article(ormar.Model):
     author: str = ormar.String(max_length=150, nullable=False)
     created_at: sqlalchemy.DateTime = ormar.DateTime(nullable=True, default=datetime.now)
     updated_at: sqlalchemy.DateTime = ormar.DateTime(nullable=True, default=datetime.now)
+
+
+
+from app.core.elasticsearch import es,index_name
+@ormar.post_save(Article)
+async def after_save_article(sender, instance, **kwargs):
+    article={
+        "title": instance.title,
+        "content": instance.content,
+        "author": instance.author,
+        "created_at": instance.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        "updated_at": instance.created_at.strftime("%Y-%m-%d %H:%M:%S")
+    }
+    es.index(index=index_name, body=article)
 
 
 engine = sqlalchemy.create_engine(settings.DB_URL)
