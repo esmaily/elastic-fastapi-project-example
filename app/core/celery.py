@@ -1,6 +1,5 @@
 from celery import Celery, Task
 from celery.schedules import crontab
-
 from kombu import Queue, Exchange
 
 from app.core.config import settings
@@ -12,7 +11,7 @@ celery_app.conf.default_routing_key = "normal"
 celery_app.conf.task_queues = (
     Queue("high", Exchange("high", type="direct"), routing_key="high", queue_arguments={"x-max-priority": 10}),
     Queue("normal", Exchange("normal", type="direct"), routing_key="normal", queue_arguments={"x-max-priority": 5}),
-    Queue("articles", Exchange("articles", type="direct"), routing_key="articles"),
+    Queue("articles", Exchange("articles", type="direct"), routing_key="articles", durable=False),
 )
 celery_app.conf.task_routes = {
     "create_article_task": "articles",
