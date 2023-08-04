@@ -5,11 +5,12 @@ services:
     container_name: "fastapi-app"
     build: .
     command: uvicorn app.main:app --host 0.0.0.0 --reload --workers 1
-#    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
+    #    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
     volumes:
       - .:/app
     depends_on:
       - db
+      - elasticsearch
     ports:
       - 8008:8000
 
@@ -29,7 +30,6 @@ services:
       - .env
     networks:
       - BackendNetwork
-
   pgadmin:
     container_name: "fastapi-pgadmin"
     image: dpage/pgadmin4
@@ -55,7 +55,6 @@ services:
       retries: 3
     expose:
       - 6379
-
   rabbit:
     hostname: rabbit
     container_name: 'fastapi-rabbit'
@@ -72,6 +71,52 @@ services:
     command: [ "bash", "-c", "chmod 400 /var/lib/rabbitmq/.erlang.cookie; rabbitmq-server" ]
     networks:
       - BackendNetwork
+  elasticsearch:
+    container_name: "fastapi-elasticsearch"
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - cluster.name=${CLUSTER_NAME}
+      - node.name=es01
+      - network.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    mem_limit: ${MEM_LIMIT}
+    env_file:
+      - .env
+    ports:
+      - "9200:9200"
+    networks:
+      - BackendNetwork
+  kibana:
+    container_name: "fastapi-kibana"
+    image: docker.elastic.co/kibana/kibana:8.9.0
+    volumes:
+      - kibana_data:/usr/share/kibana/data
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+    networks:
+      - BackendNetwork
+    env_file:
+      - .env
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
 
 
 
@@ -84,3 +129,5 @@ volumes:
   rabbitmq_data:
   postgres_data:
   rabbitmq_log:
+  kibana_data:
+  es_data:
