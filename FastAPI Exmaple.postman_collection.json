@@ -1,0 +1,139 @@
+{
+	"info": {
+		"_postman_id": "8a326eae-8746-4d65-82e2-d2c36487c55d",
+		"name": "FastAPI Exmaple",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Article List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/articles",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"articles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Article search",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"search_by\":\"sdf\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/articles/search?search_by=build",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"articles",
+						"search"
+					],
+					"query": [
+						{
+							"key": "search_by",
+							"value": "build"
+						},
+						{
+							"key": "publish_date",
+							"value": "3000-11-17",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Article Get By Titlle",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/articles/get-start-fastapi",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"articles",
+						"get-start-fastapi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Article Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\":\" about entries in the DB and are typically only \",\r\n    \"content\":\"Fields like that serve as metadata about entries in the DB and are typically only ever written to by the DB. It is strange enough that you include them in the model for creating new entries in the table. Why would you let the API set the value of when an entry in the DB was created/updated?\",\r\n    \"author\":\"jafar emsaili\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/articles/",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"articles",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8008/api",
+			"type": "default"
+		}
+	]
+}
